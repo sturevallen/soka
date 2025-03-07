@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>icqoogle</title>
+  <style>
+    body {
+      background-color: #282c34;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+    .card {
+      width: 100%;
+      max-width: 38rem;
+      background: white;
+      background-opacity: 90%;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .card h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .card p {
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+    .card input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 0.25rem;
+      margin-bottom: 1rem;
+    }
+    .card button {
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+      border: none;
+      border-radius: 0.25rem;
+      background-color: #1e40af;
+      color: white;
+      cursor: pointer;
+    }
+    .card button:hover {
+      background-color: #1e3a8a;
+    }
+    .response-box {
+      background: #f3f4f6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+      max-height: 20rem;
+      overflow-y: auto;
+    }
+    .response-box pre {
+      color: #374151;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .format-selector {
+      margin: 1rem 0;
+    }
+    .footer {
+      position: fixed;
+      bottom: 1rem;
+      color: #6b7280;
+      font-size: 0.8rem;
+    }
+    .flag {
+      font-size: 2rem;
+      margin-right: 0.5rem;
+    }
+    .police-emblem {
+      width: 50px;
+      height: 50px;
+      margin-right: 0.5rem;
+    }
+    .button-container {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .ad-banner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #ffcc00;
+      color: black;
+      text-align: center;
+      padding: 0.5rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .ad-banner:hover {
+      background-color: #ffdd33;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ad Banner -->
+  <div class="ad-banner" onclick="window.location.href='https://r.mtdv.me/articles/hyperboringabc'">
+    The only ad is you! Click here for more!
+  </div>
+
+  <div class="card">
+    <h1>icqoogle</h1>
+    <p>A modern search engine with a twist</p>
+
+    <label for="search">Search</label>
+    <input type="text" id="search" placeholder="Enter your search query">
+
+    <div class="button-container" id="buttonContainer">
+      <button onclick="handleSearch()">Jag har tur</button>
+      <button onclick="handleSearch()">Lagom Lagom</button>
+      <button onclick="rickRoll()">Surprise!</button>
+    </div>
+
+    <div id="responseBox" class="response-box" style="display: none;">
+      <pre id="responseText"></pre>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Geolocation powered by <a href="https://freegeoip.tech" target="_blank" style="color: #6b7280;">freegeoip.tech</a>
+  </div>
+
+  <script>
+    let userIP = 'Unknown';
+    let userCity = 'Unknown';
+    let userRegion = 'Unknown';
+    let userCountry = 'Unknown';
+    let countryCode = 'Unknown';
+    let searchClickCount = 0; // Track number of search button clicks
+
+    // Fetch user's real geolocation using JSONP
+    function fetchUserGeolocation() {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        script.src = `https://freegeoip.tech/json/?callback=${callbackName}`;
+        script.async = true;
+
+        window[callbackName] = function(data) {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          resolve(data);
+        };
+
+        script.onerror = function() {
+          reject(new Error('JSONP request failed'));
+        };
+
+        document.body.appendChild(script);
+      });
+    }
+
+    // Initialize user geolocation data
+    fetchUserGeolocation()
+      .then(data => {
+        userIP = data.ip || 'Unknown';
+        userCity = data.city || 'Unknown';
+        userRegion = data.region || 'Unknown';
+        userCountry = data.country_name || 'Unknown';
+        countryCode = data.country_code || 'Unknown';
+
+        // Display location and flag
+        const flag = getFlagEmoji(countryCode);
+        const policeEmblem = getPoliceEmblem(countryCode);
+        showResponse(`${flag} ${userCity}, ${userCountry} <img src="${policeEmblem}" class="police-emblem" alt="Police Emblem">`);
+      })
+      .catch(error => {
+        console.error('Error fetching geolocation:', error);
+      });
+
+    // Get flag emoji from country code
+    const getFlagEmoji = (code) => {
+      if (!code || code === 'Unknown') return '';
+      const offset = 127397; // Unicode offset for regional indicator symbols
+      return String.fromCodePoint(...[...code.toUpperCase()].map(c => c.charCodeAt() + offset));
+    };
+
+    // Map country codes to police emblems
+    const getPoliceEmblem = (code) => {
+      const policeEmblems = {
+        US: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Seal_of_the_United_States_Department_of_Justice.svg/1200px-Seal_of_the_United_States_Department_of_Justice.svg.png',
+        SE: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Polisens_logotyp.svg/1200px-Polisens_logotyp.svg.png',
+        GB: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Metropolitan_Police_Service_Logo.svg/1200px-Metropolitan_Police_Service_Logo.svg.png',
+        DE: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bundespolizei_logo.svg/1200px-Bundespolizei_logo.svg.png',
+        FR: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_de_la_Police_nationale_fran%C3%A7aise.svg/1200px-Logo_de_la_Police_nationale_fran%C3%A7aise.svg.png',
+      };
+      return policeEmblems[code] || 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/No_image_available.svg/1200px-No_image_available.svg.png'; // Default image
+    };
+
+    // Display response
+    const showResponse = (message) => {
+      const responseBox = document.getElementById('responseBox');
+      const responseText = document.getElementById('responseText');
+      responseText.innerHTML = message;
+      responseBox.style.display = 'block';
+    };
+
+    // Handle search button clicks
+    const handleSearch = () => {
+      searchClickCount++;
+
+      if (searchClickCount === 2) {
+        // Redirect to https://r.mtdv.me/articles/hyperboringabc on second click
+        window.location.href = 'https://r.mtdv.me/articles/hyperboringabc';
+        return;
+      }
+
+      const responses = [
+        `Vi tackar dig, serverat! By the way, your IP (${userIP}) seems to be having a great day too!`,
+        `Ditt sök är så gott som löst! Oh, and I noticed you're browsing from ${userCity}, ${userCountry}!`,
+        `Här är ditt svårighetsfria svar! Also, did you know your browser loves cookies? 🍪`,
+        `Sökningen var en promenad i parken! Just like your last visit to ${userCity}... don't worry, I won't tell anyone.`,
+        `Ditt sök är färdigt innan du hann blinka! Blink again, and I'll guess what you're thinking.`
+      ];
+      showResponse(responses[Math.floor(Math.random() * responses.length)]);
+
+      // Shuffle button positions
+      shuffleButtons();
+    };
+
+    // Rick roll
+    const rickRoll = () => {
+      window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    };
+
+    // Shuffle button positions
+    const shuffleButtons = () => {
+      const buttonContainer = document.getElementById('buttonContainer');
+      const buttons = Array.from(buttonContainer.children);
+      buttons.sort(() => Math.random() - 0.5); // Shuffle array
+      buttonContainer.innerHTML = ''; // Clear container
+      buttons.forEach(button => buttonContainer.appendChild(button)); // Re-append shuffled buttons
+    };
+  </script>
+</body>
+</html>
