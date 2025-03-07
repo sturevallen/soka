@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>icqoogle</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ad Banner -->
+  <div class="ad-banner" onclick="window.location.href='https://r.mtdv.me/articles/hyperboringabc'">
+    The only ad is you! Click here for more!
+  </div>
+
+  <div class="card">
+    <h1>icqoogle</h1>
+    <p>A modern search engine with a twist</p>
+
+    <label for="search">Search</label>
+    <input type="text" id="search" placeholder="Enter your search query">
+
+    <div class="button-container" id="buttonContainer">
+      <button onclick="handleSearch()">Jag har tur</button>
+      <button onclick="handleSearch()">Lagom Lagom</button>
+      <button onclick="rickRoll()">Surprise!</button>
+    </div>
+
+    <div id="responseBox" class="response-box" style="display: none;">
+      <pre id="responseText"></pre>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Geolocation powered by <a href="https://freegeoip.tech" target="_blank" style="color: #6b7280;">freegeoip.tech</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
